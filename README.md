@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G1-G4 Math Learning Tour Dashboard (100% Free Resources)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: white !important; color: black !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-full transition-colors duration-200">
+
+  <div class="min-h-full flex flex-col">
+    <!-- Top Navigation -->
+    <header class="no-print bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        
+        <!-- Logo / Title -->
+        <div class="flex items-center gap-3">
+          <div class="bg-brand-600 text-white p-2 rounded-xl shadow-md">
+            <i data-lucide="calculator" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">G1–G4 Math Learning Tour</h1>
+            <p class="text-xs text-brand-600 dark:text-brand-400 font-medium flex items-center gap-1">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> 100% Free & Open-Access Edition
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Action Controls -->
+        <div class="flex items-center gap-3">
+          
+          <!-- Student Profile Selector -->
+          <div class="relative">
+            <select id="studentSelect" onchange="switchStudent(this.value)" class="bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-medium text-sm rounded-lg px-3 py-2 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <button onclick="openAddStudentModal()" title="Add New Student" class="p-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors flex items-center gap-1 text-sm font-medium">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Add Student</span>
+          </button>
+
+          <!-- Dark Mode Toggle -->
+          <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+            <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+            <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+          </button>
+
+          <!-- Print / Export Report -->
+          <button onclick="window.print()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" title="Print Progress Report">
+            <i data-lucide="printer" class="w-5 h-5"></i>
+          </button>
+
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+      
+      <!-- Student Banner & Progress Summary -->
+      <section class="bg-gradient-to-r from-brand-700 to-emerald-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+        <div class="absolute -right-8 -bottom-8 opacity-10 pointer-events-none">
+          <i data-lucide="award" class="w-64 h-64"></i>
+        </div>
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+          <div>
+            <div class="flex items-center gap-3">
+              <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-emerald-100" id="currentStudentGradeBadge">Grade 1</span>
+              <span class="text-xs bg-emerald-900/40 px-2.5 py-1 rounded-full text-emerald-200" id="lastUpdatedDate">Updated Today</span>
+            </div>
+            <h2 class="text-3xl font-extrabold mt-2" id="currentStudentName">Select a Student</h2>
+            <p class="text-emerald-100 text-sm mt-1 max-w-xl">
+              Track mastery through curated 100% free, zero-cost elementary math standards, diagnostic quizzes, and open-source curricula.
+            </p>
+          </div>
+
+          <!-- Overall Completion Stats -->
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 min-w-[220px]">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-semibold text-emerald-100 uppercase tracking-wider">Overall Tour Progress</span>
+              <span class="text-xl font-bold" id="overallPercentText">0%</span>
+            </div>
+            <div class="w-full bg-black/20 rounded-full h-3 overflow-hidden">
+              <div id="overallProgressBar" class="bg-emerald-300 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="mt-3 flex justify-between text-xs text-emerald-100">
+              <span id="masteredCountText">0 Mastered</span>
+              <span id="inProgressCountText">0 In Progress</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="no-print">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i data-lucide="gift" class="w-5 h-5 text-brand-600"></i>
+              Verified 100% Free Math Platforms & Curricula
+            </h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Strictly curated zero-cost platforms with high-quality G1–G4 math content.</p>
+          </div>
+          <span class="text-xs bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 px-3 py-1 rounded-full font-medium">No Paid Wall Behind Core Features</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="freeResourcesGrid">
+          <!-- Dynamically generated free resource cards -->
+        </div>
+      </section>
+
+      <section>
+        <div class="border-b border-slate-200 dark:border-slate-700 no-print">
+          <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto pb-2" id="gradeTabs">
+            <!-- Tabs populated dynamically -->
+          </nav>
+        </div>
+
+        <!-- Grade Content Header -->
+        <div class="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white" id="activeGradeTitle">Grade 1 Checkpoints</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400" id="activeGradeDesc">Core foundational skills for early elementary mathematicians.</p>
+          </div>
+
+          <div class="flex items-center gap-2 no-print">
+            <button onclick="openQuizModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-lg transition-colors flex items-center gap-2 shadow-sm">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>
+              Take Diagnostic Quick Quiz
+            </button>
+          </div>
+        </div>
+
+        <!-- Checkpoints List -->
+        <div class="mt-6 space-y-4" id="checkpointsContainer">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <section class="no-print bg-slate-100 dark:bg-slate-800/60 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 mt-12">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h4 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i data-lucide="database" class="w-5 h-5 text-slate-600 dark:text-slate-400"></i>
+              Data Privacy & Local Storage
+            </h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">All student progress is saved locally in your browser. Export backups anytime.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="exportDataJSON()" class="px-3 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Export JSON
+            </button>
+            <label class="px-3 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer">
+              <i data-lucide="upload" class="w-3.5 h-3.5"></i> Import JSON
+              <input type="file" id="importFileInput" onchange="importDataJSON(event)" class="hidden" accept=".json">
+            </label>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Printable Report View (Visible only during window.print) -->
+    <div class="hidden print-only p-8 max-w-4xl mx-auto">
+      <div class="border-b-2 border-slate-900 pb-4 mb-6">
+        <h1 class="text-3xl font-bold">G1–G4 Math Learning Tour: Student Report</h1>
+        <p class="text-slate-600">Generated on: <span id="printDate"></span></p>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+        <div><strong>Student Name:</strong> <span id="printStudentName"></span></div>
+        <div><strong>Primary Grade:</strong> <span id="printStudentGrade"></span></div>
+        <div><strong>Overall Completion:</strong> <span id="printOverallProgress"></span></div>
+      </div>
+      <div id="printCheckpointsList" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- Add Student Modal -->
+  <div id="addStudentModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-5 h-5 text-brand-600"></i>
+          Add New Learner
+        </h3>
+        <button onclick="closeAddStudentModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Student Name</label>
+          <input type="text" id="newStudentName" placeholder="e.g. Alex Smith" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Current Target Grade</label>
+          <select id="newStudentGrade" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="1">Grade 1</option>
+            <option value="2">Grade 2</option>
+            <option value="3">Grade 3</option>
+            <option value="4">Grade 4</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end gap-3">
+        <button onclick="closeAddStudentModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Cancel</button>
+        <button onclick="addNewStudent()" class="px-4 py-2 text-xs font-semibold bg-brand-600 hover:bg-brand-700 text-white rounded-lg">Create Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diagnostic Quick Quiz Modal -->
+  <div id="quizModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-200 dark:border-slate-700">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-5 h-5 text-indigo-500"></i>
+            Diagnostic Checkup
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400" id="quizModalSubtitle">Quick check for Grade 1</p>
+        </div>
+        <button onclick="closeQuizModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="quizBody" class="flex-1 overflow-y-auto space-y-6 pr-1">
+        <!-- Dynamically rendered questions -->
+      </div>
+
+      <div class="mt-6 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+        <span class="text-xs text-slate-500 dark:text-slate-400">Immediate checkup evaluation</span>
+        <button onclick="submitQuiz()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg transition-colors">
+          Submit & Record
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-50">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 dark:text-emerald-600"></i>
+    <span id="toastMsg">Saved successfully!</span>
+  </div>
+
+  <script>
+    // --- TOP 100% FREE RESOURCES DATA SET ---
+    const FREE_RESOURCES = [
+      {
+        name: "Khan Academy & Khan Kids",
+        badge: "100% FREE",
+        badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300",
+        desc: "World-class, completely free math curriculum for early elementary to high school. Zero ads, zero subscriptions.",
+        url: "https://www.khanacademy.org/math/k-8-grades",
+        icon: "award"
+      },
+      {
+        name: "Zearn Math",
+        badge: "100% FREE for Families",
+        badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300",
+        desc: "Top-rated non-profit math platform aligned with top standards. Free for individual families and teachers.",
+        url: "https://www.zearn.org/",
+        icon: "check-circle-2"
+      },
+      {
+        name: "OpenUp / Illustrative Math",
+        badge: "Open Source",
+        badgeColor: "bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300",
+        desc: "High-quality open educational resource (OER) math curriculum freely available to download and use.",
+        url: "https://openupresources.org/",
+        icon: "book-open"
+      },
+      {
+        name: "CK-12 Foundation",
+        badge: "100% FREE",
+        badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300",
+        desc: "Interactive elementary math FlexBooks and adaptive practice built by a non-profit.",
+        url: "https://www.ck12.org/elementary-math/",
+        icon: "cpu"
+      },
+      {
+        name: "Pratham / TaRL Math",
+        badge: "Open Educational Resource",
+        badgeColor: "bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-300",
+        desc: "StoryWeaver & Teaching at the Right Level open math games and activity cards.",
+        url: "https://storyweaver.org.in/",
+        icon: "globe"
+      },
+      {
+        name: "Prodigy Math (Free Tier)",
+        badge: "Free Tier Available",
+        badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300",
+        desc: "Fantasy-style math quest game. All educational content and skill practice are 100% free.",
+        url: "https://www.prodigygame.com/",
+        icon: "gamepad-2"
+      },
+      {
+        name: "Math Mammoth (Free Samples)",
+        badge: "Free Diagnostic Worksheets",
+        badgeColor: "bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-300",
+        desc: "Provides extensive free placement tests, diagnostic reviews, and sample practice sheets for G1–G7.",
+        url: "https://www.mathmammoth.com/complete-free-samples",
+        icon: "file-text"
+      }
+    ];
+
+    // --- CURRICULUM CHECKPOINTS FOR G1 - G4 ---
+    const GRADE_CURRICULUM = {
+      1: {
+        title: "Grade 1 Math Tour",
+        desc: "Focus on addition/subtraction within 20, place value (tens and ones), and basic geometric shapes.",
+        checkpoints: [
+          { id: "g1_c1", title: "Addition & Subtraction within 20", desc: "Use strategies like counting on, making ten, and understanding fact families." },
+          { id: "g1_c2", title: "Place Value: Tens & Ones", desc: "Understand that two-digit numbers represent amounts of tens and ones." },
+          { id: "g1_c3", title: "Measurement & Time", desc: "Order objects by length and tell time to the hour and half-hour." },
+          { id: "g1_c4", title: "2D & 3D Geometric Shapes", desc: "Distinguish between defining attributes vs non-defining attributes of shapes." }
+        ],
+        quizzes: [
+          { id: "q_g1_1", q: "What is 8 + 7?", options: ["13", "14", "15", "16"], answer: 2 },
+          { id: "q_g1_2", q: "How many tens are in the number 42?", options: ["2", "4", "40", "42"], answer: 1 }
+        ]
+      },
+      2: {
+        title: "Grade 2 Math Tour",
+        desc: "Focus on addition/subtraction within 100, place value up to 1,000, and standard measurement.",
+        checkpoints: [
+          { id: "g2_c1", title: "Fluency within 100", desc: "Add and subtract two-digit numbers using strategies based on place value." },
+          { id: "g2_c2", title: "Place Value to 1,000", desc: "Understand hundreds, tens, and ones; skip-count by 5s, 10s, and 100s." },
+          { id: "g2_c3", title: "Money & Time Concepts", desc: "Solve word problems involving dollar bills, quarters, dimes, nickels, and pennies." },
+          { id: "g2_c4", title: "Line Plots & Data Displays", desc: "Generate measurement data and display on line plots and bar graphs." }
+        ],
+        quizzes: [
+          { id: "q_g2_1", q: "What is 54 + 28?", options: ["72", "82", "84", "92"], answer: 1 },
+          { id: "q_g2_2", q: "Which digit is in the Hundreds place in 739?", options: ["9", "3", "7", "0"], answer: 2 }
+        ]
+      },
+      3: {
+        title: "Grade 3 Math Tour",
+        desc: "Focus on multiplication & division concepts, introduction to fractions, and area/perimeter.",
+        checkpoints: [
+          { id: "g3_c1", title: "Multiplication & Division Concepts", desc: "Understand products of whole numbers and equal groups (facts 0–10)." },
+          { id: "g3_c2", title: "Understanding Fractions", desc: "Understand a fraction 1/b as the quantity formed by 1 part when a whole is partitioned." },
+          { id: "g3_c3", title: "Area & Perimeter", desc: "Relate area to multiplication and addition; calculate perimeter of polygons." },
+          { id: "g3_c4", title: "Multi-Step Word Problems", desc: "Solve two-step word problems using the four basic operations." }
+        ],
+        quizzes: [
+          { id: "q_g3_1", q: "What is 7 x 6?", options: ["36", "42", "48", "54"], answer: 1 },
+          { id: "q_g3_2", q: "If a rectangle is 4 units wide and 5 units long, what is its area?", options: ["18 sq units", "20 sq units", "9 sq units", "25 sq units"], answer: 1 }
+        ]
+      },
+      4: {
+        title: "Grade 4 Math Tour",
+        desc: "Focus on multi-digit operations, fraction equivalence & operations, decimals, and angle measurement.",
+        checkpoints: [
+          { id: "g4_c1", title: "Multi-Digit Arithmetic", desc: "Multiply a 4-digit number by a 1-digit number; divide up to 4-digit dividends." },
+          { id: "g4_c2", title: "Fraction Equivalence & Operations", desc: "Add and subtract fractions with like denominators; compare two fractions." },
+          { id: "g4_c3", title: "Decimals & Tenths/Hundredths", desc: "Express fractions with denominator 10 or 100 as decimals." },
+          { id: "g4_c4", title: "Angles & Geometric Measurement", desc: "Understand concepts of angle measurement using a protractor." }
+        ],
+        quizzes: [
+          { id: "q_g4_1", q: "Which fraction is equivalent to 2/4?", options: ["1/3", "1/2", "3/4", "2/8"], answer: 1 },
+          { id: "q_g4_2", q: "Convert 7/100 to decimal form:", options: ["0.7", "0.07", "7.0", "0.007"], answer: 1 }
+        ]
+      }
+    };
+
+    // --- STATE MANAGEMENT ---
+    let appData = {
+      activeStudentId: "s_default",
+      activeGrade: 1,
+      students: {
+        "s_default": {
+          id: "s_default",
+          name: "Sample Learner",
+          grade: 1,
+          progress: {}, // e.g. { "g1_c1": { status: "mastered", note: "Great!" } }
+          lastUpdated: new Date().toLocaleDateString()
+        }
+      }
+    };
+
+    window.onload = function() {
+      loadStorageData();
+      renderFreeResources();
+      renderGradeTabs();
+      updateDashboardUI();
+      lucide.createIcons();
+    };
+
+    function loadStorageData() {
+      try {
+        const saved = localStorage.getItem('g1g4_free_math_dashboard');
+        if (saved) {
+          appData = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error("Failed loading saved data", e);
+      }
+    }
+
+    function saveStorageData() {
+      try {
+        localStorage.setItem('g1g4_free_math_dashboard', JSON.stringify(appData));
+        showToast("Progress automatically saved!");
+      } catch (e) {
+        console.error("Failed saving data", e);
+      }
+    }
+
+    function renderFreeResources() {
+      const container = document.getElementById('freeResourcesGrid');
+      container.innerHTML = FREE_RESOURCES.map(res => `
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${res.badgeColor}">${res.badge}</span>
+              <i data-lucide="${res.icon}" class="w-4 h-4 text-slate-400"></i>
+            </div>
+            <h4 class="font-bold text-slate-900 dark:text-white text-base">${res.name}</h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">${res.desc}</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-end">
+            <a href="${res.url}" target="_blank" rel="noopener font-medium" class="text-xs text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1">
+              Visit Free Platform <i data-lucide="external-link" class="w-3 h-3"></i>
+            </a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderGradeTabs() {
+      const nav = document.getElementById('gradeTabs');
+      nav.innerHTML = [1, 2, 3, 4].map(g => `
+        <button onclick="switchGradeTab(${g})" class="px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${appData.activeGrade === g ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+          Grade ${g} Tour
+        </button>
+      `).join('');
+    }
+
+    function switchGradeTab(grade) {
+      appData.activeGrade = grade;
+      renderGradeTabs();
+      updateDashboardUI();
+    }
+
+    function updateStudentSelect() {
+      const select = document.getElementById('studentSelect');
+      select.innerHTML = Object.values(appData.students).map(s => `
+        <option value="${s.id}" ${s.id === appData.activeStudentId ? 'selected' : ''}>
+          ${s.name} (G${s.grade})
+        </option>
+      `).join('');
+    }
+
+    function switchStudent(studentId) {
+      if (appData.students[studentId]) {
+        appData.activeStudentId = studentId;
+        appData.activeGrade = appData.students[studentId].grade || 1;
+        renderGradeTabs();
+        updateDashboardUI();
+      }
+    }
+
+    function updateDashboardUI() {
+      updateStudentSelect();
+
+      const currentStudent = appData.students[appData.activeStudentId] || Object.values(appData.students)[0];
+      if (!currentStudent) return;
+
+      document.getElementById('currentStudentName').textContent = currentStudent.name;
+      document.getElementById('currentStudentGradeBadge').textContent = `Target: Grade ${currentStudent.grade}`;
+      document.getElementById('lastUpdatedDate').textContent = `Updated: ${currentStudent.lastUpdated || 'Today'}`;
+
+      // Calculate Progress
+      const allCheckpointKeys = Object.keys(GRADE_CURRICULUM).flatMap(g => GRADE_CURRICULUM[g].checkpoints.map(c => c.id));
+      let masteredCount = 0;
+      let inProgressCount = 0;
+
+      allCheckpointKeys.forEach(cid => {
+        const status = (currentStudent.progress[cid] && currentStudent.progress[cid].status) || 'not_started';
+        if (status === 'mastered') masteredCount++;
+        else if (status === 'emerging') inProgressCount++;
+      });
+
+      const totalCount = allCheckpointKeys.length;
+      const overallPercent = totalCount > 0 ? Math.round((masteredCount / totalCount) * 100) : 0;
+
+      document.getElementById('overallPercentText').textContent = `${overallPercent}%`;
+      document.getElementById('overallProgressBar').style.width = `${overallPercent}%`;
+      document.getElementById('masteredCountText').textContent = `${masteredCount} Mastered`;
+      document.getElementById('inProgressCountText').textContent = `${inProgressCount} In Progress`;
+
+      // Active Grade Section Details
+      const curGradeInfo = GRADE_CURRICULUM[appData.activeGrade];
+      document.getElementById('activeGradeTitle').textContent = curGradeInfo.title;
+      document.getElementById('activeGradeDesc').textContent = curGradeInfo.desc;
+
+      // Render Checkpoints List
+      const container = document.getElementById('checkpointsContainer');
+      container.innerHTML = curGradeInfo.checkpoints.map(cp => {
+        const studentData = currentStudent.progress[cp.id] || { status: 'not_started', note: '' };
+        return `
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">${cp.title}</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${cp.desc}</p>
+              </div>
+
+              <!-- Status Selector Buttons -->
+              <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700/60 p-1 rounded-lg self-start sm:self-auto">
+                <button onclick="setCheckpointStatus('${cp.id}', 'not_started')" class="px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${studentData.status === 'not_started' ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:text-slate-300'}">
+                  Not Started
+                </button>
+                <button onclick="setCheckpointStatus('${cp.id}', 'emerging')" class="px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${studentData.status === 'emerging' ? 'bg-amber-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:text-slate-300'}">
+                  In Progress
+                </button>
+                <button onclick="setCheckpointStatus('${cp.id}', 'mastered')" class="px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${studentData.status === 'mastered' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:text-slate-300'}">
+                  Mastered
+                </button>
+              </div>
+            </div>
+
+            <!-- Notes field -->
+            <div class="no-print">
+              <input type="text" value="${studentData.note || ''}" onchange="saveCheckpointNote('${cp.id}', this.value)" placeholder="Add educator observation or benchmark note..." class="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500">
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Populate Print-Specific View
+      document.getElementById('printStudentName').textContent = currentStudent.name;
+      document.getElementById('printStudentGrade').textContent = `Grade ${currentStudent.grade}`;
+      document.getElementById('printOverallProgress').textContent = `${overallPercent}% Mastered`;
+      document.getElementById('printDate').textContent = new Date().toLocaleDateString();
+
+      const printContainer = document.getElementById('printCheckpointsList');
+      printContainer.innerHTML = Object.keys(GRADE_CURRICULUM).map(g => {
+        const gInfo = GRADE_CURRICULUM[g];
+        return `
+          <div class="mb-4">
+            <h3 class="font-bold border-b pb-1 mb-2">${gInfo.title}</h3>
+            <ul class="space-y-1 text-sm">
+              ${gInfo.checkpoints.map(cp => {
+                const st = (currentStudent.progress[cp.id] && currentStudent.progress[cp.id].status) || 'not_started';
+                const note = (currentStudent.progress[cp.id] && currentStudent.progress[cp.id].note) || '';
+                return `<li><strong>[${st.toUpperCase()}]</strong> ${cp.title} ${note ? `- Note: ${note}` : ''}</li>`;
+              }).join('')}
+            </ul>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function setCheckpointStatus(cpId, status) {
+      const student = appData.students[appData.activeStudentId];
+      if (!student) return;
+
+      if (!student.progress[cpId]) student.progress[cpId] = { status: 'not_started', note: '' };
+      student.progress[cpId].status = status;
+      student.lastUpdated = new Date().toLocaleDateString();
+
+      saveStorageData();
+      updateDashboardUI();
+    }
+
+    function saveCheckpointNote(cpId, note) {
+      const student = appData.students[appData.activeStudentId];
+      if (!student) return;
+
+      if (!student.progress[cpId]) student.progress[cpId] = { status: 'not_started', note: '' };
+      student.progress[cpId].note = note;
+      student.lastUpdated = new Date().toLocaleDateString();
+
+      saveStorageData();
+    }
+
+    function openAddStudentModal() {
+      document.getElementById('addStudentModal').classList.remove('hidden');
+    }
+
+    function closeAddStudentModal() {
+      document.getElementById('addStudentModal').classList.add('hidden');
+    }
+
+    function addNewStudent() {
+      const nameInput = document.getElementById('newStudentName');
+      const gradeInput = document.getElementById('newStudentGrade');
+
+      const name = nameInput.value.trim();
+      if (!name) return;
+
+      const newId = 's_' + Date.now();
+      appData.students[newId] = {
+        id: newId,
+        name: name,
+        grade: parseInt(gradeInput.value, 10),
+        progress: {},
+        lastUpdated: new Date().toLocaleDateString()
+      };
+
+      appData.activeStudentId = newId;
+      appData.activeGrade = parseInt(gradeInput.value, 10);
+
+      nameInput.value = '';
+      closeAddStudentModal();
+      saveStorageData();
+      renderGradeTabs();
+      updateDashboardUI();
+    }
+
+    // Quiz Functionality
+    function openQuizModal() {
+      const curGradeInfo = GRADE_CURRICULUM[appData.activeGrade];
+      document.getElementById('quizModalSubtitle').textContent = `Quick check for Grade ${appData.activeGrade}`;
+      
+      const quizBody = document.getElementById('quizBody');
+      quizBody.innerHTML = curGradeInfo.quizzes.map((quiz, qIdx) => `
+        <div class="space-y-2">
+          <p class="font-semibold text-sm text-slate-900 dark:text-white">${qIdx + 1}. ${quiz.q}</p>
+          <div class="grid grid-cols-1 gap-2">
+            ${quiz.options.map((opt, oIdx) => `
+              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 text-xs font-medium cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50">
+                <input type="radio" name="quiz_q_${qIdx}" value="${oIdx}" class="text-brand-600 focus:ring-brand-500">
+                <span>${opt}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('quizModal').classList.remove('hidden');
+    }
+
+    function closeQuizModal() {
+      document.getElementById('quizModal').classList.add('hidden');
+    }
+
+    function submitQuiz() {
+      const curGradeInfo = GRADE_CURRICULUM[appData.activeGrade];
+      let score = 0;
+
+      curGradeInfo.quizzes.forEach((quiz, qIdx) => {
+        const selected = document.querySelector(`input[name="quiz_q_${qIdx}"]:checked`);
+        if (selected && parseInt(selected.value, 10) === quiz.answer) {
+          score++;
+        }
+      });
+
+      closeQuizModal();
+      showToast(`Quiz completed! Result: ${score}/${curGradeInfo.quizzes.length} correct.`);
+    }
+
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    function exportDataJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `g1_g4_math_tour_backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importDataJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && imported.students) {
+            appData = imported;
+            saveStorageData();
+            renderGradeTabs();
+            updateDashboardUI();
+            showToast("Data imported successfully!");
+          }
+        } catch (err) {
+          showToast("Error importing invalid JSON file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+  </script>
+</body>
+</html>
